@@ -1,0 +1,14 @@
+
+generator client {
+  provider = "prisma-client-js"
+  generatedFileExtension = "ts"
+  moduleFormat           = "esm"
+  runtime                = "bun"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+
+
