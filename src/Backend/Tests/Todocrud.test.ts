@@ -63,6 +63,24 @@ describe("Todo CRUD Operations", () => {
     it('should save todo even when some fields are missing', async () => {
         const todo = { title: "Here", completed: false };
         await saveTodo(todo);
-    })
+    });
     
+    it('should get a list of todo', async () => {
+        const user = { firstName: 'dwedeeed', lastName: 'efefef' }
+        await saveUser(user);
+        
+        const todo = { title: "Here", completed: false, userid: user.id };
+        const todo2 = { title: "Not Here", completed: false, userid: user.id };
+        await saveTodo(todo);
+        await saveTodo(todo2);
+
+
+        const fetchedUser = await getUserByName(user.firstName);
+        
+        const todos = await getAllTodos(fetchedUser.id);
+        
+
+        expect(todos).toBeInstanceOf(Array);
+        expect(todos).toHaveLength(2);
+    });
 });
