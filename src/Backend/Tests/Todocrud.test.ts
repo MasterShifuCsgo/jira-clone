@@ -1,5 +1,5 @@
 import { describe, it, expect } from "bun:test";
-import { saveTodo, getTodoById, removeTodo, removeTodoByName, getTodoByName } from "../Todocrud/crud";
+import { saveTodo, getTodoById, removeTodo, removeTodoByName, getTodoByName, updateTodo } from "../Todocrud/crud";
 
 describe("Todo CRUD Operations", () => {
     it("should create a new todo item", async () => {
@@ -20,9 +20,13 @@ describe("Todo CRUD Operations", () => {
         await saveTodo(todo);
         let updatedTodo = await getTodoByName(todo.title);
 
+        if (!updatedTodo) {
+            throw new Error("Todo not found after creation");
+        }
+
         await updateTodo(updatedTodo?.id, {title: newTitle})
-        
-        updatedTodo = await getTodoByName(todo.title);
+
+        updatedTodo = await getTodoByName(newTitle);
 
         expect(updatedTodo?.title).toBe(newTitle);
         removeTodoByName(todo.title);
@@ -40,4 +44,21 @@ describe("Todo CRUD Operations", () => {
 
         removeTodoByName(todo.title);
     });
+
+    it("removeTodoByName should delete all todos with the given title", async () => {
+        const todo = { title: "To Be Deleted", description: "This will be deleted", completed: false };
+
+        await saveTodo(todo);
+        const fetchedTodo = await getTodoByName(todo.title);
+
+        if (!fetchedTodo) {
+            throw new Error("Todo does not exist");
+        }
+
+        removeTodoByName(fetchedTodo.title);
+        const deletedTodo = await getTodoByName(fetchedTodo.title);
+        expect(deletedTodo).toBeNull();
+    });
+    
+    
 });
