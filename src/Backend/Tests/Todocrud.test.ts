@@ -15,14 +15,17 @@ describe("Todo CRUD Operations", () => {
 
     it("should update an existing todo item", async () => {
         const todo = { title: "Initial Title", description: "Initial Description", completed: false };
+        const newTitle = "Updated Todo"
 
         await saveTodo(todo);
-        todo.title = "Updated Title";
-        await saveTodo(todo);
-        const updatedTodo = await getTodoByName(todo.title);
-        expect(updatedTodo?.title).toBe(todo.title);
+        let updatedTodo = await getTodoByName(todo.title);
+
+        await updateTodo(updatedTodo?.id, {title: newTitle})
+        
+        updatedTodo = await getTodoByName(todo.title);
+
+        expect(updatedTodo?.title).toBe(newTitle);
         removeTodoByName(todo.title);
-
     });
 
     it("should delete a todo item", async () => {
