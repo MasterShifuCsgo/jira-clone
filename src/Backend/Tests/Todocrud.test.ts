@@ -1,5 +1,5 @@
 import { describe, it, expect } from "bun:test";
-import { saveTodo, getTodoById, removeTodo, removeTodoByName, getTodoByName, updateTodo } from "../Todocrud/crud";
+import { saveTodo, getTodoById, removeTodo, removeTodoByName, getTodoByName, updateTodo } from "../TodoRepository/crud";
 
 describe("Todo CRUD Operations", () => {
     it("should create a new todo item", async () => {
@@ -24,7 +24,7 @@ describe("Todo CRUD Operations", () => {
             throw new Error("Todo not found after creation");
         }
 
-        await updateTodo(updatedTodo?.id, {title: newTitle})
+        await updateTodo(updatedTodo.id, {title: newTitle})
 
         updatedTodo = await getTodoByName(newTitle);
 
@@ -54,11 +54,15 @@ describe("Todo CRUD Operations", () => {
         if (!fetchedTodo) {
             throw new Error("Todo does not exist");
         }
-
+        
         removeTodoByName(fetchedTodo.title);
         const deletedTodo = await getTodoByName(fetchedTodo.title);
         expect(deletedTodo).toBeNull();
     });
     
+    it('should save todo even when some fields are missing', async () => {
+        const todo = { title: "Here", completed: false };
+        await saveTodo(todo);
+    })
     
 });

@@ -20,7 +20,7 @@ const config: runtime.GetPrismaClientConfig = {
   "clientVersion": "7.2.0",
   "engineVersion": "0c8ef2ce45c83248ab3df073180d5eda9e8be7a3",
   "activeProvider": "sqlite",
-  "inlineSchema": "generator client {\n  provider               = \"prisma-client\"\n  output                 = \"./generated\"\n  generatedFileExtension = \"ts\"\n  moduleFormat           = \"esm\"\n  runtime                = \"bun\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n}\n\nmodel Todo {\n  id          Int     @id @default(autoincrement())\n  title       String\n  description String\n  completed   Boolean\n}\n",
+  "inlineSchema": "generator client {\n  provider               = \"prisma-client\"\n  output                 = \"./generated\"\n  generatedFileExtension = \"ts\"\n  moduleFormat           = \"esm\"\n  runtime                = \"bun\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n}\n\nmodel Todo {\n  id          Int      @id @default(autoincrement())\n  title       String\n  description String?\n  completed   Boolean?\n}\n",
   "runtimeDataModel": {
     "models": {},
     "enums": {},
