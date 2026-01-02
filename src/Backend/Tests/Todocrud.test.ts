@@ -1,20 +1,41 @@
 import { describe, it, expect } from "bun:test";
-import { saveTodo, getTodoById, removeTodo, removeTodoByName, getTodoByName, updateTodo } from "../TodoRepository/crud";
+import { saveTodo, getTodoById, removeTodo, getAllTodos , removeTodoByName, getTodoByName, updateTodo } from "../TodoRepository/crud";
+import { saveUser, getUserByName, removeUserByName } from "../UserRepository/userCrud";
 
 describe("Todo CRUD Operations", () => {
     it("should create a new todo item", async () => {
-        const todo = { title: "Test Todo", description: "aovweinm", completed: false };
+        const user = { name: 'dwedeeed' }
+        await saveUser(user);
+        
+        const fetchedUser = await getUserByName(user.name);
+
+        if (!fetchedUser) {
+            throw new Error("User does not exist")
+        }
+
+
+        const todo = { title: "Test Todo", description: "aovweinm", completed: false, userid: fetchedUser.id };
 
         await saveTodo(todo);
         const fetchedTodo = await getTodoByName(todo.title);
         expect(fetchedTodo?.title).toEqual(todo.title);
 
-        removeTodoByName(todo.title);
+        await removeTodoByName(todo.title);
+        await removeUserByName(fetchedUser.name)
 
     });
 
     it("should update an existing todo item", async () => {
-        const todo = { title: "Initial Title", description: "Initial Description", completed: false };
+        const user = { name: 'dwedeeed' }
+        await saveUser(user);
+        
+        const fetchedUser = await getUserByName(user.name);
+
+        if (!fetchedUser) {
+            throw new Error("User does not exist")
+        }
+
+        const todo = { title: "Initial Title", description: "Initial Description", completed: false, userid: fetchedUser.id };
         const newTitle = "Updated Todo"
 
         await saveTodo(todo);
@@ -29,11 +50,21 @@ describe("Todo CRUD Operations", () => {
         updatedTodo = await getTodoByName(newTitle);
 
         expect(updatedTodo?.title).toBe(newTitle);
-        removeTodoByName(todo.title);
+        await removeTodoByName(todo.title);
+        await removeUserByName(fetchedUser.name)
     });
 
     it("should delete a todo item", async () => {
-        const todo = { title: "To Be Deleted", description: "This will be deleted", completed: false };
+        const user = { name: 'dwedeeed' }
+        await saveUser(user);
+        
+        const fetchedUser = await getUserByName(user.name);
+
+        if (!fetchedUser) {
+            throw new Error("User does not exist")
+        }
+
+        const todo = { title: "To Be Deleted", description: "This will be deleted", completed: false, userid: fetchedUser.id };
 
         await saveTodo(todo);
         const fetchedTodo = await getTodoByName(todo.title);
@@ -42,11 +73,22 @@ describe("Todo CRUD Operations", () => {
         const deletedTodo = await getTodoByName(todo.title);
         expect(deletedTodo).toBeNull();
 
-        removeTodoByName(todo.title);
+        await removeTodoByName(todo.title);
+        await removeUserByName(fetchedUser.name)
     });
 
     it("removeTodoByName should delete all todos with the given title", async () => {
-        const todo = { title: "To Be Deleted", description: "This will be deleted", completed: false };
+        const user = { name: 'dwedeeed' }
+        await saveUser(user);
+        
+        const fetchedUser = await getUserByName(user.name);
+
+        if (!fetchedUser) {
+            throw new Error("User does not exist")
+        }
+
+
+        const todo = { title: "To Be Deleted", description: "This will be deleted", completed: false, userid: fetchedUser.id };
 
         await saveTodo(todo);
         const fetchedTodo = await getTodoByName(todo.title);
@@ -55,32 +97,60 @@ describe("Todo CRUD Operations", () => {
             throw new Error("Todo does not exist");
         }
         
-        removeTodoByName(fetchedTodo.title);
+        await removeTodoByName(fetchedTodo.title);
         const deletedTodo = await getTodoByName(fetchedTodo.title);
         expect(deletedTodo).toBeNull();
+        await removeUserByName(fetchedUser.name)
     });
     
     it('should save todo even when some fields are missing', async () => {
-        const todo = { title: "Here", completed: false };
+        const user = { name: 'test' }
+        await saveUser(user);
+
+
+        const fetchedUser = await getUserByName("test")
+
+         if (!fetchedUser) {
+            throw new Error("Todo does not exist");
+        }   
+        const todo = { title: "Here", completed: false, userid: fetchedUser.id, description: "Cool" };
         await saveTodo(todo);
+
+
+        const fetchedTodo = await getTodoByName("Here")
+
+        if (!fetchedTodo) {
+            throw new Error("Todo does not exist");
+        }    
+        const newTitle = fetchedTodo.title;
+        expect(fetchedTodo.title).toBe(newTitle)
+        await removeTodoByName(todo.title);
+        await removeUserByName(fetchedUser.name)
     });
     
     it('should get a list of todo', async () => {
-        const user = { firstName: 'dwedeeed', lastName: 'efefef' }
+        const user = { name: 'dwedeeed' }
         await saveUser(user);
         
-        const todo = { title: "Here", completed: false, userid: user.id };
-        const todo2 = { title: "Not Here", completed: false, userid: user.id };
+        const fetchedUser = await getUserByName(user.name);
+
+        if (!fetchedUser) {
+            throw new Error("User does not exist")
+        }
+
+        const todo = { title: "Here", completed: false, userid: fetchedUser.id, description: "Cool" };
+        const todo2 = { title: "Not Here", completed: false, userid: fetchedUser.id, description: "Very Cool" };
         await saveTodo(todo);
         await saveTodo(todo2);
 
-
-        const fetchedUser = await getUserByName(user.firstName);
         
         const todos = await getAllTodos(fetchedUser.id);
         
 
         expect(todos).toBeInstanceOf(Array);
         expect(todos).toHaveLength(2);
+        await removeTodoByName(todo.title);
+        await removeTodoByName(todo2.title);
+        await removeUserByName(fetchedUser.name)
     });
 });

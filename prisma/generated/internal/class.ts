@@ -20,7 +20,7 @@ const config: runtime.GetPrismaClientConfig = {
   "clientVersion": "7.2.0",
   "engineVersion": "0c8ef2ce45c83248ab3df073180d5eda9e8be7a3",
   "activeProvider": "sqlite",
-  "inlineSchema": "generator client {\n  provider               = \"prisma-client\"\n  output                 = \"./generated\"\n  generatedFileExtension = \"ts\"\n  moduleFormat           = \"esm\"\n  runtime                = \"bun\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n}\n\nmodel Todo {\n  id          Int      @id @default(autoincrement())\n  title       String\n  description String?\n  completed   Boolean?\n}\n",
+  "inlineSchema": "generator client {\n  provider               = \"prisma-client\"\n  output                 = \"./generated\"\n  generatedFileExtension = \"ts\"\n  moduleFormat           = \"esm\"\n  runtime                = \"bun\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n}\n\nmodel Todo {\n  id          Int      @id @default(autoincrement())\n  title       String\n  description String?\n  completed   Boolean?\n  user        User     @relation(fields: [userid], references: [id])\n  userid      Int\n}\n\nmodel User {\n  id    Int    @id @default(autoincrement())\n  name  String @unique\n  todos Todo[]\n}\n",
   "runtimeDataModel": {
     "models": {},
     "enums": {},
@@ -28,7 +28,7 @@ const config: runtime.GetPrismaClientConfig = {
   }
 }
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"Todo\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"completed\",\"kind\":\"scalar\",\"type\":\"Boolean\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"Todo\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"completed\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"TodoToUser\"},{\"name\":\"userid\",\"kind\":\"scalar\",\"type\":\"Int\"}],\"dbName\":null},\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"todos\",\"kind\":\"object\",\"type\":\"Todo\",\"relationName\":\"TodoToUser\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 
 async function decodeBase64AsWasm(wasmBase64: string): Promise<WebAssembly.Module> {
   const { Buffer } = await import('node:buffer')
@@ -183,6 +183,16 @@ export interface PrismaClient<
     * ```
     */
   get todo(): Prisma.TodoDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.user`: Exposes CRUD operations for the **User** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Users
+    * const users = await prisma.user.findMany()
+    * ```
+    */
+  get user(): Prisma.UserDelegate<ExtArgs, { omit: OmitOpts }>;
 }
 
 export function getPrismaClientClass(): PrismaClientConstructor {

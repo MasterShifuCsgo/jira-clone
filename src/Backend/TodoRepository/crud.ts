@@ -24,3 +24,7 @@ export async function updateTodo(id: number, field: Partial<Omit<Todo, 'id'>>) {
 export async function getTodoByName(title: string) {
     return await prisma.todo.findFirst({ where: { title}})
 }
+
+export async function getAllTodos(userid: number){
+    return await prisma.todo.findMany({where: { userid: userid}})
+}

@@ -16,4 +16,12 @@ model Todo {
   title String
   description String?
   completed Boolean?
+  user User @relation(fields: [userid], references: [id])
+  userid Int
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  name String @unique
+  todos Todo[]
 }
