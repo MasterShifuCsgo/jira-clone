@@ -16,7 +16,7 @@ model Todo {
   title String
   description String?
   completed Boolean?
-  user User @relation(fields: [userid], references: [id])
+  user User @relation(fields: [userid], references: [id], onDelete: Cascade)
   userid Int
 }
 
