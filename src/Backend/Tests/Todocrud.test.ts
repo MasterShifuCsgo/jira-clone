@@ -1,61 +1,41 @@
-import { describe, it, expect, beforeEach } from 'bun:test'
-import {
-  saveTodo,
-  getTodoById,
-  removeTodo,
-  getAllTodos,
-  removeTodoByName,
-  getTodoByName,
-  updateTodo,
-} from '../TodoRepository/crud'
-import { saveUser, getUserByName, removeUserByName } from '../UserRepository/userCrud'
-import generate from '../implementation'
-import type { User } from '../../../prisma/generated/client'
+import { describe, it, expect } from "bun:test";
+import { saveTodo, getTodoById, removeTodo, getAllTodos , removeTodoByName, getTodoByName, updateTodo } from "../TodoRepository/crud";
+import { saveUser, getUserByName, removeUserByName } from "../UserRepository/userCrud";
+import { beforeEach } from "node:test";
 
-describe('Todo CRUD Operations', () => {
-  let user: User
-  beforeEach(async () => {
-    const userNameGen =
-      generate()!
-    const userObj = { name: userNameGen }
-    await saveUser(userObj)
 
-    const fetchedUser = await getUserByName(userObj.name)
+describe("Todo CRUD Operations", () => {
+    beforeEach(async () => {
+        const user = { name: 'dwedeeed' }
+        await saveUser(user);
+        
+        const fetchedUser = await getUserByName(user.name);
 
-    if (!fetchedUser) {
-      throw new Error('User does not exist')
-    }
+        if (!fetchedUser) {
+            throw new Error("User does not exist")
+        }
+    })
 
-    user = fetchedUser
-  })
+    it("should create a new todo item", async () => {
+        const fetchedUser = await getUserByName(user.name);
+        const todo = { title: "Test Todo", description: "aovweinm", completed: false, userid: fetchedUser.id };
 
-  it('should create a new todo item', async () => {
-    const todo = {
-      title: 'Test Todo',
-      description: 'aovweinm',
-      completed: false,
-      userid: user.id,
-    }
+        await saveTodo(todo);
+        const fetchedTodo = await getTodoByName(todo.title);
+        expect(fetchedTodo?.title).toEqual(todo.title);
 
-    await saveTodo(todo)
-    const fetchedTodo = await getTodoByName(todo.title)
-    expect(fetchedTodo?.title).toEqual(todo.title)
+        await removeTodoByName(todo.title);
+        await removeUserByName(fetchedUser.name)
 
-    await removeTodoByName(todo.title)
-    await removeUserByName(user.name)
-  })
+    });
 
-  it('should update an existing todo item', async () => {
-    const todo = {
-      title: 'Initial Title',
-      description: 'Initial Description',
-      completed: false,
-      userid: user.id,
-    }
-    const newTitle = 'Updated Todo'
+    it("should update an existing todo item", async () => {
 
-    await saveTodo(todo)
-    let updatedTodo = await getTodoByName(todo.title)
+        const todo = { title: "Initial Title", description: "Initial Description", completed: false, userid: fetchedUser.id };
+        const newTitle = "Updated Todo"
+
+        await saveTodo(todo);
+        let updatedTodo = await getTodoByName(todo.title);
 
     if (!updatedTodo) {
       throw new Error('Todo not found after creation')
