@@ -1,9 +1,11 @@
 import { describe, it, expect } from "bun:test";
 import { saveTodo, getTodoById, removeTodo, getAllTodos , removeTodoByName, getTodoByName, updateTodo } from "../TodoRepository/crud";
 import { saveUser, getUserByName, removeUserByName } from "../UserRepository/userCrud";
+import { beforeEach } from "node:test";
+
 
 describe("Todo CRUD Operations", () => {
-    it("should create a new todo item", async () => {
+    beforeEach(async () => {
         const user = { name: 'dwedeeed' }
         await saveUser(user);
         
@@ -12,8 +14,10 @@ describe("Todo CRUD Operations", () => {
         if (!fetchedUser) {
             throw new Error("User does not exist")
         }
+    })
 
-
+    it("should create a new todo item", async () => {
+        const fetchedUser = await getUserByName(user.name);
         const todo = { title: "Test Todo", description: "aovweinm", completed: false, userid: fetchedUser.id };
 
         await saveTodo(todo);
@@ -26,14 +30,6 @@ describe("Todo CRUD Operations", () => {
     });
 
     it("should update an existing todo item", async () => {
-        const user = { name: 'dwedeeed' }
-        await saveUser(user);
-        
-        const fetchedUser = await getUserByName(user.name);
-
-        if (!fetchedUser) {
-            throw new Error("User does not exist")
-        }
 
         const todo = { title: "Initial Title", description: "Initial Description", completed: false, userid: fetchedUser.id };
         const newTitle = "Updated Todo"
